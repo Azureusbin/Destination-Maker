@@ -139,10 +139,9 @@ bool CDestinationManager::OpenFile(const char * szFilename)
 	is.seekg(0);
 
 	is.read((char*)&header, sizeof(DEST_DATA_HEADER));
+	
 	if (header.Length != fileSize)
-	{
 		return false;
-	}
 
 	is.read((char *)&size, sizeof(int));
 
@@ -194,9 +193,7 @@ bool CDestinationManager::SaveFile(const char * szFilename)
 	os.write((char*)&size, sizeof(int));
 
 	if (size > 0)
-	{
 		os.write((char*)&m_Data[0], size * sizeof(SDestinationV2));
-	}
 	
 	os.close();
 
@@ -228,9 +225,7 @@ bool CDestinationManager::searchByPinYin(const char* szKey, std::vector<SDestina
 		for (int i = 0; i < len; ++i)
 		{
 			if (szKey[i] > 'a' && szKey[i] < 'z')
-			{
 				keyUpper[i] = (char)(szKey[i] - 32);
-			}
 			else
 				keyUpper[i] = (char)szKey[i];
 		}
@@ -241,9 +236,7 @@ bool CDestinationManager::searchByPinYin(const char* szKey, std::vector<SDestina
 			std::string source = obj.initialsPy;
 
 			if (source.find(key) != std::string::npos)
-			{
 				output.push_back(obj);
-			}
 		}
 	}
 	return output.size() > 0;

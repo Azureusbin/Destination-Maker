@@ -2,6 +2,6 @@
     <qresource prefix="/Image">
         <file>Gear.png</file>
         <file>PATH.ico</file>
-        <file alias="Default.ico">DestinationMaker.ico</file>
+        <file>DestinationMaker.ico</file>
     </qresource>
 </RCC>

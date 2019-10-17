@@ -17,8 +17,8 @@
 #include "WinAreaDef.h"
 
 const char* default_title = u8"目的地数据制作器";
-const char* author_text = "By AzureuBin 2019/9/25";
-const char* software_version_ = "version 1.0.3";
+const char* author_text = "By AzureuBin 2019/10/17";
+const char* software_version_ = "version 1.1.0";
 
 CMainWindow::CMainWindow(QWidget *parent)
 	: QMainWindow(parent)

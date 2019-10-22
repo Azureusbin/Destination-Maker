@@ -33,7 +33,7 @@ struct DEST_UID
 
 	constexpr DEST_UID(unsigned char x, unsigned char y, unsigned char z, unsigned char w) : data{ x,y,z,w } {}
 
-	inline bool IsVaild() { 
+	inline bool IsInvaild() { 
 		return data[0] == INVAILD
 		&&data[1] == INVAILD
 		&&data[2] == INVAILD

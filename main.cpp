@@ -2,6 +2,7 @@
 #include <QtWidgets/QApplication>
 
 #include <QFile>
+#include <QFileInfo>
 #include <QSettings>
 #include <QMessageBox>
 
@@ -99,8 +100,20 @@ int main(int argc, char *argv[])
 	w.setWindowIcon(QIcon(":/Image/DestinationMaker.ico"));
 	w.show();
 
+
 	if (argc > 2 && stricmp(argv[1], "-OpenFile") == 0)
+	{
 		w.OpenFile(QString::fromLocal8Bit(argv[2]));
+	}
+
+	if (argc == 2)
+	{
+		QFileInfo file(QString::fromLocal8Bit(argv[1]));
+		if (file.isFile() && file.exists())
+		{
+			w.OpenFile(file.filePath());
+		}
+	}
 
 	return a.exec();
 }

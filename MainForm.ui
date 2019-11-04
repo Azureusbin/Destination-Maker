@@ -143,6 +143,9 @@
     <addaction name="QA_Save"/>
     <addaction name="QA_SaveAs"/>
     <addaction name="separator"/>
+    <addaction name="QA_CheckUID"/>
+    <addaction name="QA_ClearCheck"/>
+    <addaction name="separator"/>
     <addaction name="QA_Exit"/>
    </widget>
    <widget class="QMenu" name="menu_2">
@@ -204,6 +207,16 @@
   <action name="QA_CloseFile">
    <property name="text">
     <string>关闭文件</string>
+   </property>
+  </action>
+  <action name="QA_CheckUID">
+   <property name="text">
+    <string>检查UID唯一性</string>
+   </property>
+  </action>
+  <action name="QA_ClearCheck">
+   <property name="text">
+    <string>清空检查结果</string>
    </property>
   </action>
  </widget>

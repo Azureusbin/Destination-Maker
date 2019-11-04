@@ -3,6 +3,7 @@
 #include "ui_ItemWidget.h"
 
 #include <QIcon>
+#include <QStyle>
 #include <QPainter>
 #include <QFileInfo>
 #include <QClipboard>
@@ -17,8 +18,8 @@
 #include "WinAreaDef.h"
 
 const char* default_title = u8"目的地数据制作器";
-const char* author_text = "By AzureuBin 2019/10/17";
-const char* software_version_ = "version 1.1.1";
+const char* author_text = "By AzureuBin 2019/11/04";
+const char* software_version_ = "version 1.2.0";
 
 CMainWindow::CMainWindow(QWidget *parent)
 	: QMainWindow(parent)
@@ -68,6 +69,8 @@ CMainWindow::CMainWindow(QWidget *parent)
 	connect(ui.QA_CloseFile, &QAction::triggered, this, &CMainWindow::OnCloseFile);
 	connect(ui.QA_Save, &QAction::triggered, this, &CMainWindow::OnSaveFile);
 	connect(ui.QA_SaveAs, &QAction::triggered, this, &CMainWindow::OnSaveAs);
+	connect(ui.QA_CheckUID, &QAction::triggered, this, &CMainWindow::OnCheckUID);
+	connect(ui.QA_ClearCheck, &QAction::triggered, this, &CMainWindow::OnClearCheck);
 
 	ui.mainWidget->hide();
 
@@ -288,6 +291,66 @@ void CMainWindow::OnSaveAs()
 	CDestinationManager::Instance()->SaveFile(savePath.toLocal8Bit().constData());
 }
 
+void CMainWindow::OnCheckUID()
+{
+	INT ERROR_COUNT = 0;
+	for (INT i = 0; i < ui.listWidget->count(); ++i)
+	{
+		QListWidgetItem* item = ui.listWidget->item(i);
+		QWidget* itemWidget = ui.listWidget->itemWidget(item);
+
+		QLabel*pUidLabel = itemWidget->findChild<QLabel*>("UID");
+		DEST_UID uid = DEST_UID::FromStringInternal(pUidLabel->text().toLatin1().data());
+
+		bool hasSameUID = false;
+		for (INT j = 0; j < ui.listWidget->count(); ++j)
+		{
+			if (i == j)
+				continue;
+
+			QListWidgetItem* checkItem = ui.listWidget->item(j);
+			QWidget* checkItemWidget = ui.listWidget->itemWidget(checkItem);
+
+			QLabel*pCheckUidLabel = checkItemWidget->findChild<QLabel*>("UID");
+			DEST_UID checkuUid = DEST_UID::FromStringInternal(pCheckUidLabel->text().toLatin1().data());
+
+			if (checkuUid == uid)
+			{
+				++ERROR_COUNT;
+				hasSameUID = true;
+
+				checkItemWidget->setObjectName("ERROR");
+				checkItemWidget->style()->unpolish(pCheckUidLabel);
+				checkItemWidget->style()->polish(pCheckUidLabel);
+			}
+		}
+
+		if (hasSameUID)
+		{
+			itemWidget->setObjectName("ERROR");
+			itemWidget->style()->unpolish(pUidLabel);
+			itemWidget->style()->polish(pUidLabel);
+		}
+	}
+
+	QMessageBox::information(this, u8"检查完成", QString(u8"检查到有%1项重复。").arg(ERROR_COUNT), u8"关闭", u8"");
+}
+
+void CMainWindow::OnClearCheck()
+{
+	for (INT i = 0; i < ui.listWidget->count(); ++i)
+	{
+		QListWidgetItem* item = ui.listWidget->item(i);
+		QWidget* itemWidget = ui.listWidget->itemWidget(item);
+
+		QLabel*pUidLabel = itemWidget->findChild<QLabel*>("UID");
+
+		itemWidget->setObjectName("NORMAL");
+		itemWidget->style()->unpolish(pUidLabel);
+		itemWidget->style()->polish(pUidLabel);
+	}
+}
+
 void CMainWindow::OnAdd()
 {
 	CEditor editor(this);
@@ -351,6 +414,10 @@ void CMainWindow::OnEdit()
 		pLabelPY->setText(newDATA.initialsPy);
 		pLabelFloor->setText(QString::number(newDATA.floorNum)+"F");
 
+		char UIDString[16];
+		newDATA.uid.ToString(UIDString, 16);
+		pUidLabel->setText(UIDString);
+
 		SetShouldSave(m_currentFile.toUtf8().constData());
 
 		CDestinationManager::Instance()->ReplaceDestination(oldDATA, newDATA);
@@ -406,6 +473,12 @@ QWidget * CMainWindow::createItemWidget(SDestinationV2& DATA)
 	ui.UID->setText(data);
 
 	pWidget->setLayout(ui.gridLayout);
+	pWidget->setObjectName("NORMAL");
+
+	QStringList qss;
+	qss.append(QString("QWidget QGroupBox{border: 3px solid rgb(83, 83, 83);border-radius: 4px;}"));
+	qss.append(QString("QWidget#ERROR QLabel {color:rgb(255,40,40);}"));
+	pWidget->setStyleSheet(qss.join(""));
 
 	return pWidget;
 }
@@ -447,6 +520,7 @@ void CMainWindow::updateActions()
 	ui.QA_Save->setEnabled(bIsFileOpen);
 	ui.QA_SaveAs->setEnabled(bIsFileOpen);
 	ui.QA_CloseFile->setEnabled(bIsFileOpen);
+	ui.QA_CheckUID->setEnabled(bIsFileOpen);
 }
 
 

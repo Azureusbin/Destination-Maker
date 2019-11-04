@@ -51,6 +51,9 @@ public:
 	void OnCloseFile();
 	void OnSaveFile();
 	void OnSaveAs();
+	
+	void OnCheckUID();
+	void OnClearCheck();
 
 	void OnAdd();
 	void OnEdit();

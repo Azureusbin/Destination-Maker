@@ -184,7 +184,7 @@ bool CDestinationManager::SaveFile(const char * szFilename)
 	if (!os)
 		return false;
 
-	int size = m_Data.size();
+	int size = (int)m_Data.size();
 	int fileLength = sizeof(DEST_DATA_HEADER) + sizeof(int) + size * sizeof(SDestinationV2);
 
 	DEST_DATA_HEADER header = { 2.0, fileLength };
@@ -220,7 +220,7 @@ bool CDestinationManager::searchByPinYin(const char* szKey, std::vector<SDestina
 
 	if (szKey && *szKey)
 	{
-		int len = strlen(szKey);
+		size_t len = strlen(szKey);
 
 		for (int i = 0; i < len; ++i)
 		{

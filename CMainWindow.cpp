@@ -18,8 +18,8 @@
 #include "WinAreaDef.h"
 
 const char* default_title = u8"目的地数据制作器";
-const char* author_text = "By AzureuBin 2019/11/04";
-const char* software_version_ = "version 1.2.0";
+const char* author_text = "By AzureuBin 2019/12/12";
+const char* software_version_ = "version 1.3.0";
 
 CMainWindow::CMainWindow(QWidget *parent)
 	: QMainWindow(parent)
@@ -396,10 +396,10 @@ void CMainWindow::OnEdit()
 	QLabel*pUidLabel = itemWidget->findChild<QLabel*>("UID");
 
 	SDestinationV2 oldDATA;
-	sprintf(oldDATA.name, pGroupbox->title().toUtf8().constData());
-	sprintf(oldDATA.initialsPy, pLabelPY->text().toLatin1().constData());
-	oldDATA.floorNum = pLabelFloor->text().replace("F","", Qt::CaseInsensitive).toInt();
-	oldDATA.uid = DEST_UID::FromStringInternal(pUidLabel->text().toLatin1().data());
+	auto uid = DEST_UID::FromStringInternal(pUidLabel->text().toLatin1().data());
+
+	if (!CDestinationManager::Instance()->searchByUID(uid, &oldDATA))
+		return;
 
 	CEditor editor(this);
 	editor.setEditMode(oldDATA);
@@ -431,10 +431,10 @@ void CMainWindow::OnDelete()
 		return;
 
 	QWidget* itemWidget = ui.listWidget->itemWidget(currentItem);
-	QGroupBox*pGroupbox = itemWidget->findChild<QGroupBox*>("groupBox", Qt::FindDirectChildrenOnly);
+	QLabel*pUidLabel = itemWidget->findChild<QLabel*>("UID");
 
 	SDestinationV2 DATA = { 0 };
-	sprintf(DATA.name, pGroupbox->title().toUtf8().constData());
+	DATA.uid = DEST_UID::FromStringInternal(pUidLabel->text().toLatin1().data());
 
 	SetShouldSave(m_currentFile.toUtf8().constData());
 
@@ -563,6 +563,7 @@ void CEditor::setEditMode(SDestinationV2& DATA)
 	ui.T1->setText(DATA.name);
 	ui.T2->setText(DATA.initialsPy);
 	ui.spinBox->setValue(DATA.floorNum);
+	ui.spinBox_2->setValue(DATA.iconIdx);
 
 	char data[16];
 	DATA.uid.ToString(data, 16);
@@ -585,6 +586,7 @@ SDestinationV2 CEditor::GetDATA()
 
 	data.uid = DEST_UID::FromStringInternal(UID_QS.toLatin1().data());
 	data.floorNum = ui.spinBox->value();
+	data.iconIdx = ui.spinBox_2->value();
 
 	return data;
 }

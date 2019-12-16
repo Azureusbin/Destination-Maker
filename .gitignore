@@ -43,3 +43,4 @@
 solutions_cmake/
 FOR_RELEASE/
 bin/
+*.7z
